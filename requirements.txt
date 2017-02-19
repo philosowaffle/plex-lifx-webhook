@@ -1,0 +1,4 @@
+flask
+colorthief
+numpy
+pifx==0.0.3

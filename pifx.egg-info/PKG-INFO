@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: pifx
+Version: 0.0.3
+Summary: PIFX is a Python library for the LIFX cloud HTTP API
+Home-page: https://github.com/cydrobolt/pifx
+Author: Chaoyi Zha
+Author-email: me@cydrobolt.com
+License: Apache v2
+Description: UNKNOWN
+Keywords: lifx iot library lights sdk
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
