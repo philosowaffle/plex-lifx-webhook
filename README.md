@@ -14,6 +14,7 @@ A webhook for Plex that changes the color of your LIFX lights to match the main 
 - Navigate to directory where you cloned the repository
 - `venv\Scripts\activate`
 - `python plexlifx.py`
+- Add the webhook `http://localhost:5000` to your Plex Server
 
 ## How it works
 This webhook runs a local webserver using [Flask](http://flask.pocoo.org/) which recieves requests from Plex when certain media events occur for categories `movie` and `episode`.  Based on filter criteria that can be set in the config file the webhook decides whether or not to generate an effect.  If this event matches our criteria then it grabs the thumbnail that came along with the request and uses [color-thief-py](https://github.com/fengsp/color-thief-py) to generate a color palette.  Then, using the api wrapper provided by [PIFX](https://github.com/cydrobolt/pifx), sets your LIFX lights to match the color palette.
