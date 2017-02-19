@@ -1,11 +1,27 @@
 # plex-lifx-webhook
 A webhook for Plex that changes the color of your LIFX lights to match the main colors of the poster art being played.
 
+## Requirements
+- [LIFX](http://www.lifx.com/) lights already installed and set up
 - Install [Node.js](https://nodejs.org/en/)
-- pip install -r requirements.txt
+- Clone Repository
+- Currently need to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) for dependency management, see [Issue 1](https://github.com/philosowaffle/plex-lifx-webhook/issues/1)
+- Navigate to directory and start virtualenv: `venv\Scripts\activate`
 
+## Usage
+- [Configure variables](#Configuration)
+- `python plexlifx.py`
 
-Heavily based on [plex2hue-relay](https://github.com/lotooo/plex2hue-relay).
+## How it works
+This webhook runs a local webserver using [Flask](http://flask.pocoo.org/) which recieves requests from Plex when certain media events occur for categories `movie` and `episode`.  Based on filter criteria that can be set in the config file the webhook decides whether or not to generate an effect.  If this event matches our criteria then it grabs the thumbnail that came along with the request and uses [color-thief-py](https://github.com/fengsp/color-thief-py) to generate a color palette.  Then, using the api wrapper provided by [PIFX](https://github.com/cydrobolt/pifx), sets your LIFX lights to match the color palette.
+
+Boilerplate code heavily based on [plex2hue-relay](https://github.com/lotooo/plex2hue-relay).
+
+## Key Features
+- When playing a `movie` or `episode` sets lights to match the color palette of the media thumbnail.
+- When media is paused or stopped, lights are restored to a default "pause" theme.
+- When media is resumed, lights return to the media color palette
+- See the Configuration section for more information about customizing the experience.
 
 ## Configuration
 Configuration is done in the `config.ini` file found at the root level.
@@ -27,6 +43,3 @@ Configuration is done in the `config.ini` file found at the root level.
 
 
 
-http://flask.pocoo.org/
-https://github.com/fengsp/color-thief-py
-http://docs.python-guide.org/en/latest/dev/virtualenvs/
