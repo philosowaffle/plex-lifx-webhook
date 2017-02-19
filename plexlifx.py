@@ -240,11 +240,11 @@ def inbound_request():
 	if event == 'media.resume' or event == "media.play":
 
 		# If the file already exists then we don't need to re-upload the image
-		if event == 'media.play' and not os.path.exists(thumb_folder):
+		if not os.path.exists(thumb_folder):
 			# Get Thumb
 			if 'thumb' not in request.files:
 				logger.info("No file found in request")
-				pifx.activate_scene(default_play_theme)
+				pifx.activate_scene(default_play_uuid)
 				return 'ok'
 		
 			try:
