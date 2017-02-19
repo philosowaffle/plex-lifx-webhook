@@ -81,12 +81,18 @@ events = [
 # LIFX Setup
 ##############################
 lifx_config = config.ConfigSectionMap("LIFX")
+
+brightness = lifx_config['brightness'] if lifx_config['brightness'] else .35
+duration = lifx_config['duration'] if lifx_config['duration'] else 2.0
+num_colors = lifx_config['numcolors'] if lifx_config['numcolors'] else 4
+color_quality = lifx_config['colorquality'] if lifx_config['colorquality'] else 1
+
 if not lifx_config['apikey']:
 	logger.error("Missing LIFX API Key")
 	exit(1)
 else:
 	lifx_api_key = lifx_config['apikey']
-	logger.debug(lifx_api_key)
+	logger.debug("LIFX API Key: " + lifx_api_key)
 
 pifx = PIFX(lifx_api_key)
 
@@ -98,7 +104,6 @@ if lifx_config['lights']:
 	tmp = []
 	for light in lights:
 		tmp.append(light.strip())
-
 	lights = tmp
 else:
 	lights_detail = pifx.list_lights()
@@ -106,18 +111,25 @@ else:
 		lights.append(light['id'])
 	shuffle(lights)
 
+scenes_details = pifx.list_scenes()
+scenes = dict()
+for scene in scenes_details:
+	scenes[scene['name']] = scene['uuid']
+
+logger.debug(scenes)
 logger.debug(lights)
 
+default_pause_theme = lifx_config['defaultpausetheme']
+default_play_theme = lifx_config['defaultplaytheme']
+
+default_pause_uuid = scenes[default_pause_theme]
+default_play_uuid = scenes[default_play_theme]
+
 number_of_lights = len(lights)
-if number_of_lights < 4 :
+if number_of_lights < num_colors :
 	num_colors = number_of_lights
-else:
-	num_colors = 4
 
-brightness = lifx_config['brightness'] if lifx_config['brightness'] else .35
-duration = lifx_config['duration'] if lifx_config['duration'] else 2.0
-
-light_groups = numpy.array_split(numpy.array(lights), 4)
+light_groups = numpy.array_split(numpy.array(lights), num_colors)
 
 ##############################
 # Helper Methods
@@ -147,7 +159,7 @@ def inbound_request():
 		event = webhook['event']
 		logger.info("Event: " + event)
 	except KeyError:
-		logger.info("No event found in the json")
+		logger.error("No event found in the json")
 		return "No event found in the json"
 
 	# Only perform action for event play/pause/resume/stop for TV and Movies
@@ -160,26 +172,13 @@ def inbound_request():
    		media_type = webhook['Metadata']['type']
    		logger.debug("Media Type: " + media_type)
 	except KeyError:
-		logger.info("No media type found in the json")
+		logger.error("No media type found in the json")
 		return "No media type found in the json"
 
 	if (media_type != "movie") and (media_type != "episode"):
-		logger.info("Media type was not movie or episode, ignoring.")
+		logger.debug("Media type was not movie or episode, ignoring.")
 		return 'ok'
 
-	# Extract media guid
-	try:
-		media_guid = webhook['Metadata']['guid']
-		logger.debug("Media Guid: " + media_guid)
-
-		# Clean guid
-		media_guid = hashlib.sha224(media_guid).hexdigest()
-		logger.debug("Clean Media Guid: " + media_guid)
-	except KeyError:
-		logger.info("No media guid found")
-		return "No media guid found"
-
- 
 	# Unless we explicitly said we want to enable remote players, 
     # Let's filter events
 	if local_players_only:
@@ -194,13 +193,13 @@ def inbound_request():
 			logger.info("Not allowed. This player is not local.")
 			return 'ok'
 
-    # If we configured only specific players to be able to play with the lights
+	# If we configured only specific players to be able to play with the lights
 	if filtered_players:
 		try:
 			player_uuid = webhook['Player']['uuid'].__str__()
 			logger.debug("Player UUID: " + player_uuid)
 		except:
-			logger.info("No player uuid found")
+			logger.error("No player uuid found")
 			return 'ok'
 
 		try:
@@ -208,72 +207,84 @@ def inbound_request():
 				logger.info(player_uuid + " player is not able to play with the lights")
 				return 'ok'
 		except Exception as e:
-			logger.debug("Failed to check uuid - " + e.__str__())
+			logger.error("Failed to check uuid - " + e.__str__())
 
+	# Extract media guid
+	try:
+		media_guid = webhook['Metadata']['guid']
+		logger.debug("Media Guid: " + media_guid)
+
+		# Clean guid
+		media_guid = hashlib.sha224(media_guid).hexdigest()
+		logger.debug("Clean Media Guid: " + media_guid)
+	except KeyError:
+		logger.error("No media guid found")
+		return "No media guid found"
+
+    
 	# Get Thumbnail if any
 	thumb_folder = os.path.join(upload_folder, media_guid)
 	thumb_path = os.path.join(thumb_folder, "thumb.jpg")
+	
 	if event == 'media.stop':
-		logger.info("Removing Directory: " + thumb_folder)
+		logger.debug("Removing Directory: " + thumb_folder)
 		shutil.rmtree(thumb_folder)
 
-		# TODO : reset lights
-
+		pifx.activate_scene(default_pause_uuid)
 		return 'ok'
 
-	if event == 'media.play' and not os.path.exists(thumb_folder):
-		# Get Thumb
-		if 'thumb' not in request.files:
-			logger.info("No file found in request")
-			# TODO: just turn off lights with no theme, or set defualt theme
-			return 'ok'
-	
-		try:
-			file = request.files['thumb']			
-			# If the file already exists then we don't need to re-upload the image
-			if not os.path.exists(thumb_folder):
-				logger.info("Making Directory: " + thumb_folder)
+	if event == 'media.pause':
+		pifx.activate_scene(default_pause_uuid)
+		return 'ok'
+
+	if event == 'media.resume' or event == "media.play":
+
+		# If the file already exists then we don't need to re-upload the image
+		if event == 'media.play' and not os.path.exists(thumb_folder):
+			# Get Thumb
+			if 'thumb' not in request.files:
+				logger.info("No file found in request")
+				pifx.activate_scene(default_play_theme)
+				return 'ok'
+		
+			try:
+				file = request.files['thumb']
+				logger.debug("Making Directory: " + thumb_folder)
 				os.makedirs(thumb_folder)
 				file.save(thumb_path)
-		except Exception as e:
-			logger.error(e)
+			except Exception as e:
+				logger.error(e)
 
-    # Determine Color Palette for Lights
-	color_thief = ColorThief(thumb_path)
-	palette = color_thief.get_palette(color_count=4)
+	    # Determine Color Palette for Lights
+		color_thief = ColorThief(thumb_path)
+		palette = color_thief.get_palette(color_count=num_colors)
+		logger.debug("Color Palette: " + palette.__str__())
 
-	logger.info("Color Palette: " + palette.__str__())
+	    # Set Color Palette
+		pifx.set_state(selector='all', power="off")
+		for index in range(len(light_groups)):
+			try:
+				color = palette[index]
+				light_group = light_groups[index]
 
-    # Set Color Palette
-	pifx.set_state(selector='all', power="off")
+				logger.debug(light_group)
+				logger.debug(color)
 
-	for index in range(len(light_groups)):
-		try:
-			color = palette[index]
-			light_group = light_groups[index]
+				color_rgb = ', '.join(str(c) for c in color)
+				color_rgb = "rgb:" + color_rgb
+				color_rgb = color_rgb.replace(" ", "")
 
-			logger.debug(light_group)
-			logger.debug(color)
+				for light_id in light_group:
+					if lights_use_name:
+						selector = "label:" + light_id
+					else:
+						selector = light_id
 
-			color_rgb = ', '.join(str(c) for c in color)
-			color_rgb = "rgb:" + color_rgb
-			color_rgb = color_rgb.replace(" ", "")
-
-			for light_id in light_group:
-				if lights_use_name:
-					selector = "label:" + light_id
-				else:
-					selector = light_id
-
-				logger.debug("Setting light: " + selector + " to color: " + color_rgb)
-				pifx.set_state(selector=selector, power="on", color=color_rgb, brightness=brightness, duration=duration)
-			
-		except Exception as e:
-			logger.error(e)
-
-
-	
-
+					logger.debug("Setting light: " + selector + " to color: " + color_rgb)
+					pifx.set_state(selector=selector, power="on", color=color_rgb, brightness=brightness, duration=duration)
+				
+			except Exception as e:
+				logger.error(e)
 
 	return 'ok'
 
