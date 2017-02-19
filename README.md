@@ -4,12 +4,15 @@ A webhook for Plex that changes the color of your LIFX lights to match the main 
 ## Requirements
 - [LIFX](http://www.lifx.com/) lights already installed and set up
 - Plex Pass and Server version that supports [Plex Webhooks](https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks)
+- Python 2.7 (has not been verified with Python 3)
 - Clone Repository
 - Currently need to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) for dependency management, see [Issue 1](https://github.com/philosowaffle/plex-lifx-webhook/issues/1)
 - Navigate to directory and start virtualenv: `venv\Scripts\activate`
 
 ## Usage
 - [Configure variables](#Configuration)
+- Navigate to directory where you cloned the repository
+- `venv\Scripts\activate`
 - `python plexlifx.py`
 
 ## How it works
