@@ -3,5 +3,7 @@ logs
 *.log
 
 # Compiled Files
-# *.pyc
+*.pyc
 
+# tmp Files
+tmp/*.*
