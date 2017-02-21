@@ -13,7 +13,6 @@ import shutil
 import numpy
 
 from flask import Flask, abort, request
-from werkzeug.utils import secure_filename
 from random import shuffle
 from pifx import PIFX
 from colorthief import ColorThief
