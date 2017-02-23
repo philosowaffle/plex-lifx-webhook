@@ -192,15 +192,15 @@ def inbound_request():
 			logger.info("Not allowed. This player is not local.")
 			return 'ok'
 
+	try:
+		player_uuid = webhook['Player']['uuid'].__str__()
+		logger.debug("Player UUID: " + player_uuid)
+	except:
+		logger.error("No player uuid found")
+		return 'ok'
+
 	# If we configured only specific players to be able to play with the lights
 	if filtered_players:
-		try:
-			player_uuid = webhook['Player']['uuid'].__str__()
-			logger.debug("Player UUID: " + player_uuid)
-		except:
-			logger.error("No player uuid found")
-			return 'ok'
-
 		try:
 			if player_uuid in filtered_players:
 				logger.info(player_uuid + " player is not able to play with the lights")
