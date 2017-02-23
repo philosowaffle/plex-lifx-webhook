@@ -6,21 +6,12 @@ A webhook for Plex that changes the color of your LIFX lights to match the main 
 - Plex Pass and Server version that supports [Plex Webhooks](https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks)
 - Python 2.7 (has not been verified with Python 3)
 - Clone Repository
-- Currently need to use [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/) for dependency management, see [Issue 1](https://github.com/philosowaffle/plex-lifx-webhook/issues/1)**
-- Navigate to directory and start virtualenv: `venv\Scripts\activate`
-
-**If you have trouble with the pifx dependency try the following:
-- `venv\Scripts\activate`
-- `cd pifx`
-- `python setup.py install`
-- `cd ../`
-- `pip install -r requirements.txt`
 
 
 ## Usage
-- [Configure variables](#Configuration)
 - Navigate to directory where you cloned the repository
-- `venv\Scripts\activate`
+- [Configure variables](#configuration) - must restart script after any config changes
+- pip install -r requirements.txt
 - `python plexlifx.py`
 - Add the webhook `http://localhost:5000` to your Plex Server
 
@@ -33,7 +24,7 @@ Boilerplate code heavily based on [plex2hue-relay](https://github.com/lotooo/ple
 - When playing a `movie` or `episode` sets lights to match the color palette of the media thumbnail.
 - When media is paused or stopped, lights are restored to a default "pause" theme.
 - When media is resumed, lights return to the media color palette
-- See the Configuration section for more information about customizing the experience.
+- See the [Configuration](#configuration) section for more information about customizing the experience.
 
 ## Configuration
 Configuration is done in the `config.ini` file found at the root level.
