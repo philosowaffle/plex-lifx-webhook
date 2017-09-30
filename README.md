@@ -44,5 +44,7 @@ Configuration is done in the `config.ini` file found at the root level.
 | DefaultPlayTheme  |         | The name of the default theme that should be used should the webhook fail to generate a color palette.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Yes      | Movie Blue                                          |
 | Lights            |         | Comma separated list of your lightbulb names.  Any lights excluded in this list will be ignored and left untouched by the webhook.  The order you specify the bulbs in will effect how colors get applied.  For example, assume we have a color palette of (red, blue, yellow, green), and we have specified lights "a,b,c,d,e,f,g,h,i", the the colors will be applied like so.  Lights a, b, and c will be red.  Lights d and e will be blue.  Lights f and g will be yellow.  And lights h and i will be green.  If you choose not to specify any lights then the webhook will apply the effects to all lights and will randomize which lights get which colors. | No       | Corner Lamp,Kitchen Lamp 1,Standing Lamp2,Sofa Lamp |
 
-
+## Windows Startup
+- Right click and create a shortuct to `plexlifx.py`.
+- Copy the shortcut to `C:\Users\<Username>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`
 
