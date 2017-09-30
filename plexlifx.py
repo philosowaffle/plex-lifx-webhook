@@ -45,6 +45,8 @@ console_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
 
+logger.debug("Starting Plex+Lifx Webhook :)")
+
 ##############################
 # Flask Setup
 ##############################
@@ -81,10 +83,10 @@ events = [
 ##############################
 lifx_config = config.ConfigSectionMap("LIFX")
 
-brightness = lifx_config['brightness'] if lifx_config['brightness'] else .35
-duration = lifx_config['duration'] if lifx_config['duration'] else 2.0
-num_colors = lifx_config['numcolors'] if lifx_config['numcolors'] else 4
-color_quality = lifx_config['colorquality'] if lifx_config['colorquality'] else 1
+brightness = float(lifx_config['brightness']) if float(lifx_config['brightness']) else .35
+duration = float(lifx_config['duration']) if float(lifx_config['duration']) else 2.0
+num_colors = int(lifx_config['numcolors']) if int(lifx_config['numcolors']) else 4
+color_quality = int(lifx_config['colorquality']) if int(lifx_config['colorquality']) else 1
 
 if not lifx_config['apikey']:
 	logger.error("Missing LIFX API Key")
@@ -125,10 +127,14 @@ default_pause_uuid = scenes[default_pause_theme]
 default_play_uuid = scenes[default_play_theme]
 
 number_of_lights = len(lights)
-if number_of_lights < num_colors :
+if number_of_lights < num_colors:
 	num_colors = number_of_lights
 
 light_groups = numpy.array_split(numpy.array(lights), num_colors)
+
+logger.debug("Number of Lights: " + color_quality.__str__())
+logger.debug("Number of Colors: " + num_colors.__str__())
+logger.debug("Color Quality: " + color_quality.__str__())
 
 ##############################
 # Helper Methods
@@ -256,7 +262,7 @@ def inbound_request():
 
 	    # Determine Color Palette for Lights
 		color_thief = ColorThief(thumb_path)
-		palette = color_thief.get_palette(color_count=num_colors)
+		palette = color_thief.get_palette(color_count=num_colors, quality=color_quality)
 		logger.debug("Color Palette: " + palette.__str__())
 
 	    # Set Color Palette
