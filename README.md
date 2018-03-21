@@ -1,6 +1,8 @@
 # plex-lifx-webhook
 A webhook for Plex that changes the color of your LIFX lights to match the main colors of the poster art being played.
 
+Want to run this script through [Tatulli](http://tautulli.com)?  Go **[here](https://github.com/blacktwin/JBOPS/blob/master/fun/plex_lifx_color_theme.pyw)**!
+
 ## Requirements
 - [LIFX](http://www.lifx.com/) lights already installed and set up
 - Plex Pass and Server version that supports [Plex Webhooks](https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks)
