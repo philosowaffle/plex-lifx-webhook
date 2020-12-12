@@ -3,6 +3,8 @@ A webhook for Plex that changes the color of your LIFX lights to match the main 
 
 Want to run this script through [Tatulli](http://tautulli.com)?  Go **[here](https://github.com/blacktwin/JBOPS/blob/master/fun/plex_lifx_color_theme.pyw)**!
 
+<a href="https://www.buymeacoffee.com/philosowaffle" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
+
 ## Requirements
 - [LIFX](http://www.lifx.com/) lights already installed and set up
 - Plex Pass and Server version that supports [Plex Webhooks](https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks)
