@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import logging
 
 ##############################
@@ -7,7 +7,7 @@ import logging
 logger = logging.getLogger('plex_lifx_webhook.config_helper')
 
 
-Config = ConfigParser.ConfigParser()
+Config = configparser.ConfigParser()
 Config.read('config.ini')
 
 def ConfigSectionMap(section):
