@@ -50,7 +50,7 @@ logger.debug("Starting Plex+Lifx Webhook :)")
 ##############################
 # Flask Setup
 ##############################
-flask_port = config.ConfigSectionMap("SERVER")['flaskport']
+flask_port = int(config.ConfigSectionMap("SERVER")['flaskport'])
 
 upload_folder = os.getcwd() + '/tmp'
 
@@ -173,7 +173,7 @@ def inbound_request():
 		return 'ok'
 
    	# Extract the media type
-   	try:
+	try:
    		media_type = webhook['Metadata']['type']
    		logger.debug("Media Type: " + media_type)
 	except KeyError:
@@ -220,7 +220,7 @@ def inbound_request():
 		logger.debug("Media Guid: " + media_guid)
 
 		# Clean guid
-		media_guid = hashlib.sha224(media_guid).hexdigest()
+		media_guid = hashlib.sha224(media_guid.encode('utf-8')).hexdigest()
 		logger.debug("Clean Media Guid: " + media_guid)
 	except KeyError:
 		logger.error("No media guid found")
@@ -232,8 +232,9 @@ def inbound_request():
 	thumb_path = os.path.join(thumb_folder, "thumb.jpg")
 	
 	if event == 'media.stop':
-		logger.debug("Removing Directory: " + thumb_folder)
-		shutil.rmtree(thumb_folder)
+		if os.path.isdir(thumb_folder):
+			logger.debug("Removing Directory: " + thumb_folder)
+			shutil.rmtree(thumb_folder)
 
 		pifx.activate_scene(default_pause_uuid)
 		return 'ok'
