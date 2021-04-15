@@ -8,7 +8,7 @@ Want to run this script through [Tatulli](http://tautulli.com)?  Go **[here](htt
 ## Requirements
 - [LIFX](http://www.lifx.com/) lights already installed and set up
 - Plex Pass and Server version that supports [Plex Webhooks](https://support.plex.tv/hc/en-us/articles/115002267687-Webhooks)
-- Python 2.7 (has not been verified with Python 3)
+- Python 3
 - Clone Repository
 
 
